@@ -23,7 +23,7 @@ class TestCreateAccount:
         create_user_response = requests.post(
             url="http://localhost:4111/api/admin/create",
             json={
-                "username": "Max22003",
+                "username": "Max22004",
                 "password": "Pas!sw0rd",
                 "role": "ROLE_USER"
             },
@@ -38,7 +38,7 @@ class TestCreateAccount:
         login_user_response = requests.post(
             url="http://localhost:4111/api/auth/token/login",
             json={
-                "username": "Max22003",
+                "username": "Max22004",
                 "password": "Pas!sw0rd"
             },
             headers={
