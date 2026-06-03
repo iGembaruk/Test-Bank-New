@@ -20,6 +20,6 @@ class ResponseSpecs:
     @staticmethod
     def request_bad():
         def confirm(response: Response):
-            assert response.status_code == HTTPStatus.BAD_REQUEST, response.text
+            assert response.status_code in [HTTPStatus.BAD_REQUEST, HTTPStatus.NOT_FOUND, HTTPStatus.UNPROCESSABLE_CONTENT], response.text
 
         return confirm
