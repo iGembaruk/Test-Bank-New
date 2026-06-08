@@ -8,7 +8,7 @@ import rstr
 
 class RandomModelGenerator:
     @staticmethod
-    def generate(cls, type) -> Any:
+    def generate(cls: type) -> Any:
         type_hints = get_type_hints(cls, include_extras=True)
         init_data = {}
 
@@ -29,7 +29,7 @@ class RandomModelGenerator:
 
             init_data[field_name] = value
 
-            return cls(**init_data)
+        return cls(**init_data)
 
     @staticmethod
     def _generate_from_regex(regex: str, field_type):

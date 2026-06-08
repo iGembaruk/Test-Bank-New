@@ -6,7 +6,6 @@ from src.main.api.specs.response_specs import ResponseSpecs
 from src.main.api.steps.base_steps import BaseSteps
 
 
-
 class UserSteps(BaseSteps):
     def create_account(self, create_user_request: CreateUserRequest):
         response = ValidateCrudRequester(
