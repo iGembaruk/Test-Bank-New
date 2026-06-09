@@ -3,13 +3,13 @@ from http import HTTPStatus
 import requests
 from requests import Response
 
-from src.main.api.models.create_user_request import CreateUserRequest
+from src.main.api.models.create_user_request import CreateSimpleUserRequest
 from src.main.api.models.create_user_response import CreateUserResponse
 from src.main.api.requests.requester import Requester
 
 
 class CreateUserRequester(Requester):
-    def post(self, create_user_request: CreateUserRequest) -> CreateUserResponse | Response:
+    def post(self, create_user_request: CreateSimpleUserRequest) -> CreateUserResponse | Response:
         url = f"{self.base_url}/admin/create"
         response = requests.post(
             url=url,
