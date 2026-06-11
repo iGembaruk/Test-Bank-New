@@ -1,11 +1,17 @@
 import random
 
+from sqlalchemy.orm import Session
+
+from src.main.api.classes.api_manager import ApiManager
+from src.main.api.db.crud.transaction_crud import TransactionCrudDb
+from src.main.api.models.create_user_request import CreateSimpleUserRequest
 from src.main.api.models.deposit_request import DepositRequest
 from src.main.api.models.transfer_account_request import TransferAccountRequest
 
 
 class TestTransfer:
-    def test_transfer_valid(self, create_simple_user_request, api_manager):
+    def test_transfer_valid(self, db_session: Session, create_simple_user_request: CreateSimpleUserRequest,
+                            api_manager: ApiManager):
         create_account_response = api_manager.user_steps.create_account(create_simple_user_request)
 
         deposit_body = DepositRequest(accountId=create_account_response.id,
@@ -26,8 +32,11 @@ class TestTransfer:
             password=create_simple_user_request.password
         )
         assert transfer_response.fromAccountIdBalance == deposit_body.amount - transfer_request.amount
+        db_data = TransactionCrudDb.get_last_transaction_by_account_id(db_session, transfer_response.toAccountId)
+        assert db_data is not None
 
-    def test_transfer_invalid(self, create_simple_user_request, api_manager):
+    def test_transfer_invalid(self, db_session: Session, create_simple_user_request: CreateSimpleUserRequest,
+                              api_manager: ApiManager):
         create_account_response = api_manager.user_steps.create_account(create_simple_user_request)
 
         deposit_body = DepositRequest(accountId=create_account_response.id,
@@ -47,3 +56,6 @@ class TestTransfer:
             username=create_simple_user_request.username,
             password=create_simple_user_request.password
         )
+
+        db_data = TransactionCrudDb.get_last_transaction_by_account_id(db_session, transfer_request.toAccountId)
+        assert db_data is None

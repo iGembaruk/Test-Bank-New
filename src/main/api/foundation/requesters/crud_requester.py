@@ -34,5 +34,6 @@ class CrudRequester(HttpRequester):
             url=f"{Config.fetch('backendUrl')}{self.endpoint.value.url}/{user_id}",
             headers=self.request_spec,
         )
+        allure.step(f"DELETE user{Config.fetch('backendUrl')}{self.endpoint.value.url}/{user_id}")
         self.response_spec(response)
         return response
