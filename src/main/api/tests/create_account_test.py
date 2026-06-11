@@ -13,4 +13,4 @@ class TestCreateAccount:
         assert response.balance == 0
         account_from_db = AccountCrudDb.get_account_by_id(db_session, response.id)
         assert account_from_db.id == response.id, 'Account not found db'
-        assert account_from_db.balance is not None, 'Field balance for created account not found in db'
+        assert account_from_db.balance is not None
