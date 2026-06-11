@@ -8,8 +8,8 @@ from src.main.api.models.create_user_request import CreateSimpleUserRequest
 from src.main.api.models.create_user_response import CreateUserResponse
 from src.main.api.models.credit_request import CreditRequest
 from src.main.api.models.credit_response import CreditResponse
-from src.main.api.models.deposit_account_request import DepositAccountRequest
-from src.main.api.models.deposit_account_response import DepositAccountResponse
+from src.main.api.models.deposit_request import DepositRequest
+from src.main.api.models.deposit_response import DepositResponse
 from src.main.api.models.login_user_request import LoginUserRequest
 from src.main.api.models.login_user_response import LoginUserResponse
 from src.main.api.models.repay_credit_request import RepayCreditRequest
@@ -58,8 +58,8 @@ class Endpoint(Enum):
 
     DEPOSIT = EndpointConfiguration(
         url="/account/deposit",
-        request_model=DepositAccountRequest,
-        response_model=DepositAccountResponse,
+        request_model=DepositRequest,
+        response_model=DepositResponse,
     )
 
     REPAY_CREDIT = EndpointConfiguration(

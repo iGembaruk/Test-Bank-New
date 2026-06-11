@@ -1,6 +1,6 @@
 import random
 
-from src.main.api.models.deposit_account_request import DepositAccountRequest
+from src.main.api.models.deposit_request import DepositRequest
 from src.main.api.models.transfer_account_request import TransferAccountRequest
 
 
@@ -8,8 +8,8 @@ class TestTransfer:
     def test_transfer_valid(self, create_simple_user_request, api_manager):
         create_account_response = api_manager.user_steps.create_account(create_simple_user_request)
 
-        deposit_body = DepositAccountRequest(accountId=create_account_response.id,
-                                             amount=round(random.uniform(1000.0, 2000.0), 2))
+        deposit_body = DepositRequest(accountId=create_account_response.id,
+                                      amount=round(random.uniform(1000.0, 2000.0), 2))
         replenishment_deposit_response = api_manager.user_steps.deposit(
             deposit_request=deposit_body,
             username=create_simple_user_request.username,
@@ -30,8 +30,8 @@ class TestTransfer:
     def test_transfer_invalid(self, create_simple_user_request, api_manager):
         create_account_response = api_manager.user_steps.create_account(create_simple_user_request)
 
-        deposit_body = DepositAccountRequest(accountId=create_account_response.id,
-                                             amount=round(random.uniform(1000.0, 2000.0), 2))
+        deposit_body = DepositRequest(accountId=create_account_response.id,
+                                      amount=round(random.uniform(1000.0, 2000.0), 2))
         replenishment_deposit_response = api_manager.user_steps.deposit(
             deposit_request=deposit_body,
             username=create_simple_user_request.username,

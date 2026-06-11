@@ -3,7 +3,7 @@ from src.main.api.foundation.requesters.crud_requester import CrudRequester
 from src.main.api.foundation.requesters.validate_crud_requester import ValidateCrudRequester
 from src.main.api.models.create_user_request import CreateSimpleUserRequest, CreateCreditUserRequest
 from src.main.api.models.credit_request import CreditRequest
-from src.main.api.models.deposit_account_request import DepositAccountRequest
+from src.main.api.models.deposit_request import DepositRequest
 from src.main.api.models.repay_credit_request import RepayCreditRequest
 from src.main.api.models.transfer_account_request import TransferAccountRequest
 from src.main.api.specs.request_specs import RequestSpecs
@@ -44,7 +44,7 @@ class UserSteps(BaseSteps):
         ).post(credit_request)
         return response
 
-    def deposit(self, deposit_request: DepositAccountRequest, username: str, password: str):
+    def deposit(self, deposit_request: DepositRequest, username: str, password: str):
         response = ValidateCrudRequester(
             request_spec=RequestSpecs.auth_headers(username=username, password=password),
             endpoint=Endpoint.DEPOSIT,
@@ -52,8 +52,8 @@ class UserSteps(BaseSteps):
         ).post(deposit_request)
         return response
 
-    def deposit_invalid(self, deposit_request: DepositAccountRequest, username: str, password: str):
-        CrudRequester(
+    def deposit_invalid(self, deposit_request: DepositRequest, username: str, password: str):
+        response = CrudRequester(
             request_spec=RequestSpecs.auth_headers(username=username, password=password),
             endpoint=Endpoint.DEPOSIT,
             response_spec=ResponseSpecs.request_bad()
@@ -68,7 +68,7 @@ class UserSteps(BaseSteps):
         return response
 
     def repay_credit_invalid(self, repay_request: RepayCreditRequest, username: str, password: str):
-        CrudRequester(
+        response = CrudRequester(
             request_spec=RequestSpecs.auth_headers(username=username, password=password),
             endpoint=Endpoint.REPAY_CREDIT,
             response_spec=ResponseSpecs.request_bad()
@@ -83,7 +83,7 @@ class UserSteps(BaseSteps):
         return response
 
     def transfer_invalid(self, transfer_request: TransferAccountRequest, username: str, password: str):
-        CrudRequester(
+        response = CrudRequester(
             request_spec=RequestSpecs.auth_headers(username=username, password=password),
             endpoint=Endpoint.TRANSFER,
             response_spec=ResponseSpecs.request_bad()

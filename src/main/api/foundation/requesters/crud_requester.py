@@ -1,4 +1,6 @@
+import json
 from typing import Optional
+from xml.etree.ElementTree import indent
 
 import allure
 import requests
@@ -10,21 +12,20 @@ from src.main.api.foundation.http_requester import HttpRequester
 
 
 class CrudRequester(HttpRequester):
-    def post(self, model: Optional[BaseModel]) -> Response:
-        body = model.model_dump() if model is not None else ""
-
-        with allure.step(f"POST {Config.fetch('backendUrl')}{self.endpoint.value.url}"):
-            allure.attach(str(body), "Request body", allure.attachment_type.JSON)
+    def post(self, model: Optional[BaseModel], log: bool = True) -> Response:
+        body = model.model_dump() if model else None
         response = requests.post(
             url=f"{Config.fetch('backendUrl')}{self.endpoint.value.url}",
             headers=self.request_spec,
             json=body
         )
-        allure.attach(
-            response.text,
-            "Response body",
-            allure.attachment_type.JSON
-        )
+        if log:
+            with allure.step(f"POST {Config.fetch('backendUrl')}{self.endpoint.value.url}"):
+                body = json.dumps(model.model_dump(), indent=2, ensure_ascii=False) if model else {}
+                allure.attach(body, "Request", allure.attachment_type.JSON)
+                allure.attach(json.dumps(response.json(), indent=2, ensure_ascii=False), "Response Error",
+                              allure.attachment_type.JSON)
+
         self.response_spec(response)
         return response
 
