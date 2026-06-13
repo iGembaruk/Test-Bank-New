@@ -1,54 +1,33 @@
-import random
-
 from sqlalchemy.orm import Session
 
 from src.main.api.classes.api_manager import ApiManager
+from src.main.api.db.crud.credit_crud import CreditCrudDb
 from src.main.api.db.crud.transaction_crud import TransactionCrudDb
-from src.main.api.models.create_user_request import CreateCreditUserRequest
-from src.main.api.models.credit_request import CreditRequest
-from src.main.api.models.repay_credit_request import RepayCreditRequest
+from src.main.api.models.create_account_response import CreateAccountResponse
+from src.main.api.models.create_user_request import CreateUserRoleCreditRequest
+from src.main.api.models.credit_response import CreditResponse
 
 
 class TestRepayCreditAccount:
-    def test_repay_credit_valid(self, db_session: Session, api_manager, create_credit_user_request):
-        account = api_manager.user_steps.create_account_for_credit(create_credit_user_request)
-
-        body_for_credit = CreditRequest(accountId=account.id, amount=round(random.uniform(5000, 10000), 2),
-                                        termMonths=random.randint(1, 12))
-        credit_response = api_manager.user_steps.receive_credit(
-            credit_request=body_for_credit,
-            username=create_credit_user_request.username,
-            password=create_credit_user_request.password
-        )
-
-        repay_request = RepayCreditRequest(creditId=credit_response.creditId, accountId=credit_response.id,
-                                           amount=body_for_credit.amount)
-        repay_response = api_manager.user_steps.repay_credit(
-            repay_request=repay_request,
-            username=create_credit_user_request.username,
-            password=create_credit_user_request.password
-        )
-        assert repay_response.amountDeposited == body_for_credit.amount
+    def test_repay_credit_valid(self, db_session: Session,
+                                api_manager: ApiManager,
+                                create_user_role_credit_request: CreateUserRoleCreditRequest,
+                                create_account_request_for_credit: CreateAccountResponse,
+                                create_credit_response: CreditResponse
+                                ):
+        repay_response = api_manager.user_steps.repay_credit(create_credit_response, create_user_role_credit_request)
+        assert repay_response.amountDeposited == create_credit_response.amount
         db_data = TransactionCrudDb.get_last_transaction_by_credit_id(db_session, repay_response.creditId)
-        assert db_data.amount == repay_response.amountDeposited
+        assert db_data.amount == repay_response.amountDeposited, 'amount should be equals'
 
-    def test_repay_credit_invalid(self, db_session: Session, api_manager: ApiManager, create_credit_user_request:CreateCreditUserRequest):
-        account = api_manager.user_steps.create_account_for_credit(create_credit_user_request)
+    def test_repay_credit_invalid(self, db_session: Session,
+                                api_manager: ApiManager,
+                                create_user_role_credit_request: CreateUserRoleCreditRequest,
+                                create_account_request_for_credit: CreateAccountResponse,
+                                create_credit_response: CreditResponse
+                                ):
+        repay_response = api_manager.user_steps.repay_credit_invalid(create_credit_response, create_user_role_credit_request)
+        assert "The amount is not enough" in repay_response.error
 
-        body_for_credit = CreditRequest(accountId=account.id, amount=random.uniform(5000, 10000),
-                                        termMonths=random.randint(1, 12))
-        credit_response = api_manager.user_steps.receive_credit(
-            credit_request=body_for_credit,
-            username=create_credit_user_request.username,
-            password=create_credit_user_request.password
-        )
-
-        repay_request = RepayCreditRequest(creditId=credit_response.creditId, accountId=credit_response.id,
-                                           amount=body_for_credit.amount)
-        api_manager.user_steps.repay_credit_invalid(
-            repay_request=repay_request,
-            username=create_credit_user_request.username,
-            password=create_credit_user_request.password
-        )
-        db_data = TransactionCrudDb.get_last_transaction_by_credit_id(db_session, repay_request.creditId)
-        assert db_data is None
+        db_data = CreditCrudDb.get_credit(db_session, create_credit_response.creditId)
+        assert db_data.amount == create_credit_response.amount

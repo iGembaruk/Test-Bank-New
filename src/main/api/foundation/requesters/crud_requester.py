@@ -1,6 +1,5 @@
 import json
 from typing import Optional
-from xml.etree.ElementTree import indent
 
 import allure
 import requests
