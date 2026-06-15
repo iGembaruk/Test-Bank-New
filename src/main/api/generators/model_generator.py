@@ -14,7 +14,7 @@ class RandomModelGenerator:
 
         for field_name, annotated_type in type_hints.items():
             rule = None
-            actual_type = annotated_type()
+            actual_type = annotated_type
 
             if get_origin(annotated_type) is Annotated:
                 actual_type, *annotations = get_args(annotated_type)
@@ -23,7 +23,7 @@ class RandomModelGenerator:
                         rule = ann
 
             if rule:
-                value = RandomModelGenerator._generate_from_regex(rule.regex, actual_type)
+                value = RandomModelGenerator._generate_by_rule(rule, actual_type)
             else:
                 value = RandomModelGenerator._generate_value(actual_type)
 
@@ -32,13 +32,20 @@ class RandomModelGenerator:
         return cls(**init_data)
 
     @staticmethod
-    def _generate_from_regex(regex: str, field_type):
-        generated = rstr.xeger(regex)
-        if field_type is int:
-            return int(generated)
-        if field_type is float:
-            return float(generated)
-        return generated
+    def _generate_by_rule(rule: CreationRule, field_type):
+        if rule.regex:
+            generated = rstr.xeger(rule.regex)
+            if field_type is int:
+                return int(generated)
+            if field_type is float:
+                return float(generated)
+            return generated
+        if rule.min is not None and rule.max is not None:
+            if field_type is int:
+                return random.randint(int(rule.min), int(rule.max))
+            if field_type is float:
+                return round(random.uniform(float(rule.min), float(rule.max)), 2)
+        raise ValueError(f"CreationRule provided but no valid generator for type {field_type}")
 
     @staticmethod
     def _generate_value(field_type: type) -> Any:

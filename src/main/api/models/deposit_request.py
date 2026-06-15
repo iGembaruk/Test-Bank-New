@@ -1,8 +1,8 @@
-from typing import Optional
+import random
 
 from src.main.api.models.base_model import BaseModel
 
 
 class DepositRequest(BaseModel):
     accountId: int
-    amount: Optional[float] = None
+    amount: float = round(random.uniform(1000.0, 9000.0), 2)
